@@ -229,9 +229,10 @@ GameObject:
   - component: {fileID: 720271406}
   - component: {fileID: 720271405}
   - component: {fileID: 720271404}
-  - component: {fileID: 720271403}
   - component: {fileID: 720271402}
+  - component: {fileID: 720271409}
   - component: {fileID: 720271408}
+  - component: {fileID: 720271403}
   - component: {fileID: 720271407}
   m_Layer: 0
   m_Name: Player
@@ -362,7 +363,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!114 &720271408
 MonoBehaviour:
@@ -388,6 +389,45 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
+--- !u!114 &720271409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 720271401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138e12399905da74dbf499ab5b6985c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveLimit: {fileID: 524016546}
+  Jump:
+    m_Name: Jump
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: b7b56d5a-e930-4ca9-ac86-6e0b874408c5
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  body: {fileID: 0}
+  velocity: {x: 0, y: 0, z: 0}
+  jumpHeight: 4
+  timeToJumpApex: 0.449
+  upwardMovementMultiplier: 1
+  downwardMovementMultiplier: 2.45
+  maxAirJumps: 0
+  variablejumpHeight: 0
+  jumpCutOff: 1.61
+  speedLimit: 0
+  coyoteTime: 0.15
+  jumpBuffer: 0.15
+  jumpSpeed: 0
+  gravMultiplier: 0
+  canJumpAgain: 0
+  gravityScale: 0
+  onGround: 0
 --- !u!1 &1223158502
 GameObject:
   m_ObjectHideFlags: 0

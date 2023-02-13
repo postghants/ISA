@@ -44,6 +44,15 @@ public partial class @InputMap : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""047070db-24f4-45f3-bb4b-43510d50e801"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -112,6 +121,17 @@ public partial class @InputMap : IInputActionCollection2, IDisposable
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e829de4c-bb3a-4c61-a35e-b8d248583992"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -128,6 +148,7 @@ public partial class @InputMap : IInputActionCollection2, IDisposable
         m_Map = asset.FindActionMap("Map", throwIfNotFound: true);
         m_Map_Move = m_Map.FindAction("Move", throwIfNotFound: true);
         m_Map_Look = m_Map.FindAction("Look", throwIfNotFound: true);
+        m_Map_Jump = m_Map.FindAction("Jump", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -189,12 +210,14 @@ public partial class @InputMap : IInputActionCollection2, IDisposable
     private IMapActions m_MapActionsCallbackInterface;
     private readonly InputAction m_Map_Move;
     private readonly InputAction m_Map_Look;
+    private readonly InputAction m_Map_Jump;
     public struct MapActions
     {
         private @InputMap m_Wrapper;
         public MapActions(@InputMap wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Map_Move;
         public InputAction @Look => m_Wrapper.m_Map_Look;
+        public InputAction @Jump => m_Wrapper.m_Map_Jump;
         public InputActionMap Get() { return m_Wrapper.m_Map; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -210,6 +233,9 @@ public partial class @InputMap : IInputActionCollection2, IDisposable
                 @Look.started -= m_Wrapper.m_MapActionsCallbackInterface.OnLook;
                 @Look.performed -= m_Wrapper.m_MapActionsCallbackInterface.OnLook;
                 @Look.canceled -= m_Wrapper.m_MapActionsCallbackInterface.OnLook;
+                @Jump.started -= m_Wrapper.m_MapActionsCallbackInterface.OnJump;
+                @Jump.performed -= m_Wrapper.m_MapActionsCallbackInterface.OnJump;
+                @Jump.canceled -= m_Wrapper.m_MapActionsCallbackInterface.OnJump;
             }
             m_Wrapper.m_MapActionsCallbackInterface = instance;
             if (instance != null)
@@ -220,6 +246,9 @@ public partial class @InputMap : IInputActionCollection2, IDisposable
                 @Look.started += instance.OnLook;
                 @Look.performed += instance.OnLook;
                 @Look.canceled += instance.OnLook;
+                @Jump.started += instance.OnJump;
+                @Jump.performed += instance.OnJump;
+                @Jump.canceled += instance.OnJump;
             }
         }
     }
@@ -237,5 +266,6 @@ public partial class @InputMap : IInputActionCollection2, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
     }
 }

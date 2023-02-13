@@ -15,7 +15,8 @@ public class playerJump : MonoBehaviour
 
 
     [Header("Jumping Stats")]
-    [SerializeField, Range(2f, 5.5f)][Tooltip("Maximum jump height")] public float jumpHeight = 7.3f;
+    [SerializeField, Range(-0.1f, -30f)][Tooltip("Standard gravity")] public float gravity = Physics.gravity.y;
+    [SerializeField, Range(2f, 500f)][Tooltip("Maximum jump height")] public float jumpHeight = 7.3f;
     [SerializeField, Range(0.2f, 1.25f)][Tooltip("How long it takes to reach that height before coming back down")] public float timeToJumpApex;
     [SerializeField, Range(0f, 5f)][Tooltip("Gravity multiplier to apply when going up")] public float upwardMovementMultiplier = 1f;
     [SerializeField, Range(1f, 10f)][Tooltip("Gravity multiplier to apply when coming down")] public float downwardMovementMultiplier = 6.17f;
@@ -119,26 +120,27 @@ public class playerJump : MonoBehaviour
     private void setPhysics()
     {
         //Determine the character's gravity scale, using the stats provided. Multiply it by a gravMultiplier, used later
-        Vector3 newGravity = new Vector3(0, (-2 * jumpHeight) / (timeToJumpApex * timeToJumpApex), 0);
-        gravityScale = (newGravity.y / Physics.gravity.y) * gravMultiplier;
+        Vector3 newGravity = new Vector3(0, (-2) / (timeToJumpApex * timeToJumpApex), 0);
+        gravityScale = (newGravity.y / gravity) * gravMultiplier;
     }
 
     private void FixedUpdate()
     {
         //Get velocity from Kit's Rigidbody 
         velocity = body.velocity;
-        velocity.y += -gravityScale;
 
         //Keep trying to do a jump, for as long as desiredJump is true
         if (desiredJump)
         {
             DoAJump();
+            velocity.y += gravity * gravityScale;
             body.velocity = velocity;
 
             //Skip gravity calculations this frame, so currentlyJumping doesn't turn off
             //This makes sure you can't do the coyote time double jump bug
             return;
         }
+        velocity.y += gravity * gravityScale;
         body.velocity = velocity;
         calculateGravity();
     }
@@ -224,7 +226,7 @@ public class playerJump : MonoBehaviour
             canJumpAgain = (maxAirJumps == 1 && canJumpAgain == false);
 
             //Determine the power of the jump, based on our gravity and stats
-            jumpSpeed = Mathf.Sqrt(-2f * Physics.gravity.y * gravityScale * jumpHeight);
+            jumpSpeed = Mathf.Sqrt(-2f * gravity * gravityScale * jumpHeight);
 
             //If Kit is moving up or down when she jumps (such as when doing a double jump), change the jumpSpeed;
             //This will ensure the jump is the exact same strength, no matter your velocity.

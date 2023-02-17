@@ -83,11 +83,11 @@ public class playerMovement : MonoBehaviour
         //Calculate's the character's desired velocity - which is the direction you are facing, multiplied by the character's maximum speed
         //Friction is not used in this game
         desiredVelocity = direction * Mathf.Max(maxSpeed - friction, 0f);
-
     }
 
     private void FixedUpdate()
     {
+        body.angularVelocity = Vector3.zero;
         //Fixed update runs in sync with Unity's physics engine
 
         //Get Kit's current ground status from her ground script

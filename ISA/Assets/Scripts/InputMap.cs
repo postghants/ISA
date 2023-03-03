@@ -53,6 +53,24 @@ public partial class @InputMap : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Fire"",
+                    ""type"": ""Button"",
+                    ""id"": ""2d5a191b-40be-4a45-833d-d2dc2412b18e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Scroll"",
+                    ""type"": ""Value"",
+                    ""id"": ""86ca3b2d-dffe-4edb-8f11-58307de83a36"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -132,6 +150,50 @@ public partial class @InputMap : IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dbd9cbb2-735b-413f-b3ec-e7d005067807"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""2e0fa389-b055-4960-bc8d-30330275d875"",
+                    ""path"": ""1DAxis(whichSideWins=1)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Scroll"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""f5082d47-45b4-4375-b172-f09ee8f98a91"",
+                    ""path"": ""<Mouse>/scroll/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Scroll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""fdf2b3cd-b240-4b75-9f08-91ab504a338e"",
+                    ""path"": ""<Mouse>/scroll/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Scroll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -149,6 +211,8 @@ public partial class @InputMap : IInputActionCollection2, IDisposable
         m_Map_Move = m_Map.FindAction("Move", throwIfNotFound: true);
         m_Map_Look = m_Map.FindAction("Look", throwIfNotFound: true);
         m_Map_Jump = m_Map.FindAction("Jump", throwIfNotFound: true);
+        m_Map_Fire = m_Map.FindAction("Fire", throwIfNotFound: true);
+        m_Map_Scroll = m_Map.FindAction("Scroll", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -211,6 +275,8 @@ public partial class @InputMap : IInputActionCollection2, IDisposable
     private readonly InputAction m_Map_Move;
     private readonly InputAction m_Map_Look;
     private readonly InputAction m_Map_Jump;
+    private readonly InputAction m_Map_Fire;
+    private readonly InputAction m_Map_Scroll;
     public struct MapActions
     {
         private @InputMap m_Wrapper;
@@ -218,6 +284,8 @@ public partial class @InputMap : IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Map_Move;
         public InputAction @Look => m_Wrapper.m_Map_Look;
         public InputAction @Jump => m_Wrapper.m_Map_Jump;
+        public InputAction @Fire => m_Wrapper.m_Map_Fire;
+        public InputAction @Scroll => m_Wrapper.m_Map_Scroll;
         public InputActionMap Get() { return m_Wrapper.m_Map; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -236,6 +304,12 @@ public partial class @InputMap : IInputActionCollection2, IDisposable
                 @Jump.started -= m_Wrapper.m_MapActionsCallbackInterface.OnJump;
                 @Jump.performed -= m_Wrapper.m_MapActionsCallbackInterface.OnJump;
                 @Jump.canceled -= m_Wrapper.m_MapActionsCallbackInterface.OnJump;
+                @Fire.started -= m_Wrapper.m_MapActionsCallbackInterface.OnFire;
+                @Fire.performed -= m_Wrapper.m_MapActionsCallbackInterface.OnFire;
+                @Fire.canceled -= m_Wrapper.m_MapActionsCallbackInterface.OnFire;
+                @Scroll.started -= m_Wrapper.m_MapActionsCallbackInterface.OnScroll;
+                @Scroll.performed -= m_Wrapper.m_MapActionsCallbackInterface.OnScroll;
+                @Scroll.canceled -= m_Wrapper.m_MapActionsCallbackInterface.OnScroll;
             }
             m_Wrapper.m_MapActionsCallbackInterface = instance;
             if (instance != null)
@@ -249,6 +323,12 @@ public partial class @InputMap : IInputActionCollection2, IDisposable
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
+                @Fire.started += instance.OnFire;
+                @Fire.performed += instance.OnFire;
+                @Fire.canceled += instance.OnFire;
+                @Scroll.started += instance.OnScroll;
+                @Scroll.performed += instance.OnScroll;
+                @Scroll.canceled += instance.OnScroll;
             }
         }
     }
@@ -267,5 +347,7 @@ public partial class @InputMap : IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnFire(InputAction.CallbackContext context);
+        void OnScroll(InputAction.CallbackContext context);
     }
 }

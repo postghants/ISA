@@ -140,9 +140,12 @@ public class playerJump : MonoBehaviour
             //This makes sure you can't do the coyote time double jump bug
             return;
         }
-        velocity.y += gravity * gravityScale;
-        body.velocity = velocity;
-        calculateGravity();
+        if (!onGround)
+        {
+            velocity.y += gravity * gravityScale;
+            body.velocity = velocity;
+        }   
+            calculateGravity();
     }
 
     private void calculateGravity()

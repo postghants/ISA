@@ -7,9 +7,11 @@ using UnityEngine.InputSystem;
 public class PistolFireEffect : MonoBehaviour, HandheldObject
 {
     public LayerMask hitMask;
-    public Transform fpsCamera;
+    [HideInInspector] public Transform fpsCamera;
 
-    public int damage = 5;
+    public int damage;
+    public float fireCooldown;
+    private float fireTimer = 0;
 
     private RaycastHit lastHitInfo;
 
@@ -18,13 +20,32 @@ public class PistolFireEffect : MonoBehaviour, HandheldObject
         fpsCamera = FindObjectOfType<Camera>().transform;
     }
 
+    public void FixedUpdate()
+    {
+        if(fireTimer > 0)
+        {
+            fireTimer -= Time.deltaTime;
+            if(fireTimer < 0)
+            {
+                fireTimer = 0;
+            }
+        }
+    }
+
     public void OnFire(InputAction.CallbackContext context)
     {
-        if(Physics.Raycast(fpsCamera.position, fpsCamera.TransformDirection(Vector3.forward), out lastHitInfo, 100, hitMask))
+        if (fireTimer == 0)
         {
-            print("Hit");
-            HitHandler target = lastHitInfo.collider.gameObject.GetComponent<HitHandler>();
-            target.TakeDamage(damage);
+            if (Physics.Raycast(fpsCamera.position, fpsCamera.TransformDirection(Vector3.forward), out lastHitInfo, 100, hitMask))
+            {
+                HitHandler target = lastHitInfo.collider.gameObject.GetComponent<HitHandler>();
+                if (target != null)
+                {
+                    target.TakeDamage(damage);
+                    print("Hit");
+                }
+            }
+            fireTimer = fireCooldown;
         }
     }
 

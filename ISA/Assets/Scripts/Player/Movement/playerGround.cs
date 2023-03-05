@@ -8,10 +8,13 @@ public class playerGround : MonoBehaviour
     public float groundRadius;
     public LayerMask groundLayerMask;
 
-    private void Update()
+    public void Update()
     {
         onGround = Physics.CheckSphere(transform.position, groundRadius, groundLayerMask);
     }
+
+
+
     public bool GetOnGround()
     {
         return onGround;

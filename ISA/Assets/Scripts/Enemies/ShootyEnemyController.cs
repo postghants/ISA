@@ -56,6 +56,8 @@ public class ShootyEnemyController : MonoBehaviour
 
     public void StandingBehaviour()
     {
+        transform.rotation = Quaternion.Euler(0, player.transform.rotation.y - 180, 0);
+
         if (Vector3.Distance(transform.position, player.position) < runAwayDistance && runAwayAllowed)
         {
             RunAway(player.position);
@@ -74,6 +76,7 @@ public class ShootyEnemyController : MonoBehaviour
         GameObject projectile = Instantiate(shootProjectilePrefab);
         ProjectileController pc = projectile.GetComponent<ProjectileController>();
         projectile.transform.position = shootOffset.position;
+        pc.shooter = this.gameObject;
         pc.damage = shootDamage;
         pc.speed = shootSpeed;
         pc.lifespan = shootLifespan;

@@ -5,9 +5,7 @@ using UnityEngine;
 
 public class ProjectileController : MonoBehaviour
 {
-    [Header("Layer Masks")]
-    public LayerMask hitMask;
-    public LayerMask passThroughMask;
+    public GameObject shooter;
 
     [Header("Stats")]
     public Vector3 direction;
@@ -27,9 +25,14 @@ public class ProjectileController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.CompareTag("Player"))
+        PlayerStatus ps = other.GetComponent<PlayerStatus>();
+        if (ps != null)
         {
-            HitPlayer(other.GetComponent<PlayerStatus>());
+            HitPlayer(ps);
+        }
+        else if(other.gameObject == shooter)
+        {
+            return;
         }
         else
         {

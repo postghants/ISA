@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   onGround: 0
-  groundRadius: 0.5
+  groundRadius: 0.45
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 64

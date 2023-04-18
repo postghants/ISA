@@ -1,19 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class ShootyEnemyController : MonoBehaviour
+public class ShootyEnemyController : EnemyController
 {
-    public enum StateEnum { Standing, Shooting, Running }
-    public StateEnum state;
-
-    private NavMeshAgent agent;
-    public Transform player;
-
-    [Header("Health")]
-    public int maxHealth = 10;
-    public int health;
+    public enum ShootyStateEnum { Standing, Shooting, Running, Knockback }
+    public ShootyStateEnum shootyState;
 
     [Header("Shoot")]
     public GameObject shootProjectilePrefab;
@@ -33,22 +27,26 @@ public class ShootyEnemyController : MonoBehaviour
     [HideInInspector] public bool runAwayAllowed = true;
 
 
-    public void Awake()
+    public override void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        rb = GetComponent<Rigidbody>();
+
+        shootyState = ShootyStateEnum.Standing;
         health = maxHealth;
-        state = StateEnum.Standing;
     }
 
-    public void FixedUpdate()
+    public override void FixedUpdate()
     {
-        switch (state)
+        switch (shootyState)
         {
-            case StateEnum.Standing:
+            case ShootyStateEnum.Standing:
                 StandingBehaviour(); break;
-            case StateEnum.Running:
+            case ShootyStateEnum.Running:
                 break;
-            case StateEnum.Shooting:
+            case ShootyStateEnum.Shooting:
+                break;
+                case ShootyStateEnum.Knockback: 
                 break;
 
         }
@@ -67,10 +65,24 @@ public class ShootyEnemyController : MonoBehaviour
             StartCoroutine(Shoot());
         }
     }
+    public override void KnockbackBehaviour()
+    {
+        if (CheckGrounded() && stunnedTimer <= 0)
+        {
+            shootyState = ShootyStateEnum.Standing;
+            agent.enabled = true;
+            rb.isKinematic = true;
+        }
+        else
+        {
+            stunnedTimer -= Time.deltaTime;
+            Mathf.Clamp(stunnedTimer, 0, Mathf.Infinity);
+        }
+    }
 
     public IEnumerator Shoot()
     {
-        state = StateEnum.Shooting;
+        shootyState = ShootyStateEnum.Shooting;
         shootAllowed = false;
         yield return new WaitForSeconds(shootStartup);
         GameObject projectile = Instantiate(shootProjectilePrefab);
@@ -82,7 +94,7 @@ public class ShootyEnemyController : MonoBehaviour
         pc.lifespan = shootLifespan;
         pc.direction = player.position - transform.position;
         yield return new WaitForSeconds(shootWalkCooldown);
-        state = StateEnum.Standing;
+        shootyState = ShootyStateEnum.Standing;
         yield return new WaitForSeconds(shootCooldown - shootWalkCooldown);
         shootAllowed = true;
     }
@@ -104,7 +116,7 @@ public class ShootyEnemyController : MonoBehaviour
         runAwayAllowed = true;
     }
 
-    public void TakeDamage(int damage)
+    public override void TakeDamage(int damage)
     {
         health -= damage;
         if (health <= 0)
@@ -112,8 +124,16 @@ public class ShootyEnemyController : MonoBehaviour
             Die();
         }
     }
+    public override void TakeKnockback(Vector3 force, float time)
+    {
+        agent.enabled = false;
+        rb.isKinematic = false;
+        rb.AddForce(force);
+        stunnedTimer = time;
+        shootyState = ShootyStateEnum.Knockback;
+    }
 
-    public void Die()
+    public override void Die()
     {
         Destroy(gameObject);
     }

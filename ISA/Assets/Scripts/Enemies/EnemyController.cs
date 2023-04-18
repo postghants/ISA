@@ -5,25 +5,62 @@ using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
+    public enum StateEnum { Running, Knockback }
+    public StateEnum state;
+
     public int maxHealth;
     public int health;
+    public float stunnedTimer;
 
-    private NavMeshAgent agent;
+    public Vector3 groundCheckOffset;
+    public float groundCheckRadius;
+    public LayerMask groundMask;
+
+    public NavMeshAgent agent;
+    public Rigidbody rb;
     public Transform player;
 
-    public void Awake()
+    public virtual void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        rb = GetComponent<Rigidbody>();
 
+        state = StateEnum.Running;
         health = maxHealth;
     }
 
-    public void FixedUpdate()
+    public virtual void FixedUpdate()
+    {
+        switch (state) 
+        { 
+            case StateEnum.Running: 
+                RunningBehaviour(); break;
+            case StateEnum.Knockback: 
+                KnockbackBehaviour(); break;
+        }
+    }
+
+    public virtual void RunningBehaviour()
     {
         agent.SetDestination(player.position);
     }
 
-    public void TakeDamage(int damage)
+    public virtual void KnockbackBehaviour()
+    {
+        if(CheckGrounded() && stunnedTimer <= 0)
+        {
+            state = StateEnum.Running;
+            agent.enabled = true;
+            rb.isKinematic = true;
+        }
+        else
+        {
+            stunnedTimer -= Time.deltaTime;
+            Mathf.Clamp(stunnedTimer, 0, Mathf.Infinity);
+        }
+    }
+
+    public virtual void TakeDamage(int damage)
     {
         health -= damage;
         if(health <= 0)
@@ -32,7 +69,22 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    public void Die()
+
+    public virtual void TakeKnockback(Vector3 force, float time)
+    {
+        agent.enabled = false;
+        rb.isKinematic = false;
+        rb.AddForce(force);
+        stunnedTimer = time;
+        state = StateEnum.Knockback;
+    }
+
+    public virtual bool CheckGrounded()
+    {
+        return Physics.CheckSphere(transform.position + groundCheckOffset, groundCheckRadius, groundMask);
+    }
+
+    public virtual void Die()
     {
         Destroy(gameObject);
     }

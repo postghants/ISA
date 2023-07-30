@@ -31,6 +31,7 @@ public class ShootyEnemyController : EnemyController
     {
         agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
+        player = FindObjectOfType<PlayerStatus>().transform;
 
         shootyState = ShootyStateEnum.Standing;
         health = maxHealth;
@@ -38,6 +39,8 @@ public class ShootyEnemyController : EnemyController
 
     public override void FixedUpdate()
     {
+        if (!spawned) return;
+
         switch (shootyState)
         {
             case ShootyStateEnum.Standing:
@@ -116,25 +119,14 @@ public class ShootyEnemyController : EnemyController
         runAwayAllowed = true;
     }
 
-    public override void TakeDamage(int damage)
-    {
-        health -= damage;
-        if (health <= 0)
-        {
-            Die();
-        }
-    }
     public override void TakeKnockback(Vector3 force, float time)
     {
+        if (!spawned) return;
+
         agent.enabled = false;
         rb.isKinematic = false;
         rb.AddForce(force);
         stunnedTimer = time;
         shootyState = ShootyStateEnum.Knockback;
-    }
-
-    public override void Die()
-    {
-        Destroy(gameObject);
     }
 }

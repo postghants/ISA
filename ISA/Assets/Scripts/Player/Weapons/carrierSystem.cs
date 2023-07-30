@@ -55,6 +55,16 @@ public class carrierSystem : MonoBehaviour, InputMap.IMapActions
 
         }
     }
+
+    public void AddHandheld(HandheldScriptableObject handheld)
+    {
+        if (EquippableHandhelds.Contains(handheld))
+        {
+            return;
+        }
+        EquippableHandhelds.Add(handheld);
+    }
+
     public void OnFire(InputAction.CallbackContext context)
     {
         if (currentHandheldInterface != null)

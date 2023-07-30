@@ -7,6 +7,7 @@ public class EnemyController : MonoBehaviour
 {
     public enum StateEnum { Running, Knockback }
     public StateEnum state;
+    public bool spawned = false;
 
     public int maxHealth;
     public int health;
@@ -24,6 +25,7 @@ public class EnemyController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
+        player = FindObjectOfType<PlayerStatus>().transform;
 
         state = StateEnum.Running;
         health = maxHealth;
@@ -31,6 +33,8 @@ public class EnemyController : MonoBehaviour
 
     public virtual void FixedUpdate()
     {
+        if (!spawned) return;
+
         switch (state) 
         { 
             case StateEnum.Running: 
@@ -62,6 +66,8 @@ public class EnemyController : MonoBehaviour
 
     public virtual void TakeDamage(int damage)
     {
+        if (!spawned) return;
+
         health -= damage;
         if(health <= 0)
         {
@@ -72,6 +78,8 @@ public class EnemyController : MonoBehaviour
 
     public virtual void TakeKnockback(Vector3 force, float time)
     {
+        if (!spawned) return;
+
         agent.enabled = false;
         rb.isKinematic = false;
         rb.AddForce(force);

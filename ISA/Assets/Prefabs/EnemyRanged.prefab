@@ -145,6 +145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
+  spawned: 0
   maxHealth: 10
   health: 0
   stunnedTimer: 0
@@ -166,7 +167,7 @@ MonoBehaviour:
   shootWalkCooldown: 0
   shootCooldown: 1
   shootAllowed: 1
-  runAwayDistance: 4
+  runAwayDistance: 10
   lenghtOfRun: 5
   runAwayCooldown: 3
   runAwayAllowed: 1

@@ -8,16 +8,18 @@ public class PistolFireEffect : MonoBehaviour, HandheldObject
 {
     public LayerMask hitMask;
     [HideInInspector] public Transform fpsCamera;
+    public GameObject bulletHole;
 
     public int damage;
     public float fireCooldown;
+    public float maxRange = 100;
     private float fireTimer = 0;
 
     private RaycastHit lastHitInfo;
 
     public void Awake()
     {
-        fpsCamera = FindObjectOfType<Camera>().transform;
+        fpsCamera = Camera.main.transform;
     }
 
     public void FixedUpdate()
@@ -32,20 +34,34 @@ public class PistolFireEffect : MonoBehaviour, HandheldObject
         }
     }
 
+    public void Shoot()
+    {
+        if (Physics.Raycast(fpsCamera.position, fpsCamera.TransformDirection(Vector3.forward), out lastHitInfo, maxRange, hitMask))
+        {
+            HitHandler target = lastHitInfo.collider.gameObject.GetComponent<HitHandler>();
+            if (target != null)
+            {
+                target.TakeDamage(damage);
+                print("Hit");
+            }
+            if (lastHitInfo.collider.gameObject.layer == 6)
+            {
+                if (bulletHole != null)
+                {
+                    GameObject bh = Instantiate(bulletHole, lastHitInfo.collider.transform);
+                    bh.transform.position = lastHitInfo.point + lastHitInfo.normal * 0.001f;
+                    bh.transform.rotation = Quaternion.FromToRotation(Vector3.up, lastHitInfo.normal);
+                }
+            }
+        }
+        fireTimer = fireCooldown;
+    }
+
     public void OnFire(InputAction.CallbackContext context)
     {
         if (fireTimer == 0)
         {
-            if (Physics.Raycast(fpsCamera.position, fpsCamera.TransformDirection(Vector3.forward), out lastHitInfo, 100, hitMask))
-            {
-                HitHandler target = lastHitInfo.collider.gameObject.GetComponent<HitHandler>();
-                if (target != null)
-                {
-                    target.TakeDamage(damage);
-                    print("Hit");
-                }
-            }
-            fireTimer = fireCooldown;
+            Shoot();
         }
     }
 

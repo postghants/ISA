@@ -13,6 +13,10 @@ public class EnemyController : MonoBehaviour
     public int health;
     public float stunnedTimer;
 
+    public int damage;
+    public float cooldown;
+    private float cooldownTimer;
+
     public Vector3 groundCheckOffset;
     public float groundCheckRadius;
     public LayerMask groundMask;
@@ -42,6 +46,26 @@ public class EnemyController : MonoBehaviour
             case StateEnum.Knockback: 
                 KnockbackBehaviour(); break;
         }
+
+        if(cooldownTimer > 0)
+        {
+            cooldownTimer -= Time.deltaTime;
+            if(cooldownTimer < 0)
+            {
+                cooldownTimer = 0;
+            }
+        }
+    }
+
+    public virtual void OnCollisionEnter(Collision collision)
+    {
+        if(cooldownTimer > 0) return;
+        PlayerStatus ps = collision.collider.GetComponent<PlayerStatus>();
+        if (ps != null)
+        {
+            ps.TakeDamage(damage);
+            cooldownTimer = cooldown;
+        }
     }
 
     public virtual void RunningBehaviour()
@@ -53,6 +77,7 @@ public class EnemyController : MonoBehaviour
     {
         if(CheckGrounded() && stunnedTimer <= 0)
         {
+            Mathf.Clamp(stunnedTimer, 0, Mathf.Infinity);
             state = StateEnum.Running;
             agent.enabled = true;
             rb.isKinematic = true;

@@ -50,8 +50,8 @@ public class AirgunFireEffect : MonoBehaviour, HandheldObject
     public void Shoot()
     {
         playerLook.ShakeCamera(shakeDuration, shakeIntensity);
-        Vector3 hitStartVector = fpsCamera.TransformDirection(Vector3.forward) * hitStartOffset;
-        Vector3 hitLengthVector = fpsCamera.TransformDirection(Vector3.forward) * (hitStartOffset + hitLength);
+        Vector3 hitStartVector = playerRb.transform.position + fpsCamera.TransformDirection(Vector3.forward) * hitStartOffset;
+        Vector3 hitLengthVector = playerRb.transform.position + fpsCamera.TransformDirection(Vector3.forward) * (hitStartOffset + hitLength);
         Collider[] colliders = Physics.OverlapCapsule(hitStartVector, hitLengthVector, hitRadius, hitMask);
         foreach (Collider collider in colliders)
         {

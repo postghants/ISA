@@ -108,7 +108,7 @@ MonoBehaviour:
   fpsCamera: {fileID: 0}
   playerRb: {fileID: 0}
   damage: 0
-  enemyKbForce: 1000
+  enemyKbForce: 300
   enemyKbTime: 1
   playerKbForce: 1000
   fireCooldown: 0.2

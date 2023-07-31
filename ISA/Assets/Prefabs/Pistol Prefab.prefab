@@ -101,8 +101,10 @@ MonoBehaviour:
     m_Bits: 320
   fpsCamera: {fileID: 0}
   bulletHole: {fileID: 5674290836015378777, guid: 43c05ac11990f1441bbf2b97bd768047, type: 3}
+  tracer: {fileID: 1571092001785863625, guid: 8be02acb1d2cccf458048f217506ed13, type: 3}
   damage: 5
   fireCooldown: 0.3
   maxRange: 100
   shakeDuration: 0.1
-  shakeIntensity: 0.02
+  shakeIntensity: 0.03
+  tracerDuration: 0.1

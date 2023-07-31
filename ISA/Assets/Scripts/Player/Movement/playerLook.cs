@@ -45,7 +45,7 @@ public class playerLook : MonoBehaviour
         if (shakeTimer > 0)
         {
             Vector3 shake = Random.insideUnitSphere * shakeIntensity;
-            playerCamera.localPosition = new Vector3(initialPosition.x + shake.x, initialPosition.y + shake.y, initialPosition.z + shake.z);
+            playerCamera.localPosition += shake;
             shakeTimer -= Time.deltaTime;
         }
         else

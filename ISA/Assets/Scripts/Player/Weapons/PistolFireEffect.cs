@@ -10,6 +10,7 @@ public class PistolFireEffect : MonoBehaviour, HandheldObject
     [HideInInspector] public Transform fpsCamera;
     private playerLook playerLook;
     public GameObject bulletHole;
+    public GameObject tracer;
 
     public int damage;
     public float fireCooldown;
@@ -18,6 +19,7 @@ public class PistolFireEffect : MonoBehaviour, HandheldObject
 
     public float shakeDuration;
     public float shakeIntensity;
+    public float tracerDuration;
 
     private RaycastHit lastHitInfo;
 
@@ -58,8 +60,27 @@ public class PistolFireEffect : MonoBehaviour, HandheldObject
                     bh.transform.SetPositionAndRotation(lastHitInfo.point + lastHitInfo.normal * 0.001f, Quaternion.FromToRotation(Vector3.up, lastHitInfo.normal));
                 }
             }
+            SpawnTracer(lastHitInfo.point);
+        }
+        else
+        {
+            Vector3 tracerEnd = transform.position + fpsCamera.TransformDirection(Vector3.forward) * maxRange;
+            SpawnTracer(tracerEnd);
         }
         fireTimer = fireCooldown;
+    }
+
+    public void SpawnTracer(Vector3 endPoint)
+    {
+        if (tracer != null)
+        {
+            GameObject line = Instantiate(tracer);
+            LineRenderer lineRenderer = line.GetComponent<LineRenderer>();
+            TracerController tracerController = line.GetComponent<TracerController>();
+            lineRenderer.SetPosition(0, transform.position);
+            lineRenderer.SetPosition(1, endPoint);
+            tracerController.timer = tracerDuration;
+        }
     }
 
     public void OnFire(InputAction.CallbackContext context)

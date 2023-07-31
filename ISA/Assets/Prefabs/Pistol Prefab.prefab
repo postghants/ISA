@@ -104,3 +104,5 @@ MonoBehaviour:
   damage: 5
   fireCooldown: 0.3
   maxRange: 100
+  shakeDuration: 0.1
+  shakeIntensity: 0.02

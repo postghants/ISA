@@ -11,6 +11,11 @@ public class playerLook : MonoBehaviour
     private float xRotation;
     public InputMap inputMap;
     public InputAction Look;
+
+    public float shakeTimer = 0;
+    public float shakeIntensity = 0;
+    private Vector3 initialPosition;
+
     void Start()
     {
         inputMap = new InputMap();
@@ -18,7 +23,9 @@ public class playerLook : MonoBehaviour
         inputMap.Enable();
         Look.Enable();
         Cursor.lockState = CursorLockMode.Locked;
+        initialPosition = playerCamera.localPosition;
     }
+
 
     // Update is called once per frame
     void Update()
@@ -32,5 +39,26 @@ public class playerLook : MonoBehaviour
         playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         transform.Rotate(Vector3.up * mouseX);
 
+    }
+    private void FixedUpdate()
+    {
+        if (shakeTimer > 0)
+        {
+            Vector3 shake = Random.insideUnitSphere * shakeIntensity;
+            playerCamera.localPosition = new Vector3(initialPosition.x + shake.x, initialPosition.y + shake.y, initialPosition.z + shake.z);
+            shakeTimer -= Time.deltaTime;
+        }
+        else
+        {
+            shakeTimer = 0;
+            playerCamera.localPosition = initialPosition;
+        }
+    }
+
+    public void ShakeCamera(float duration, float intensity)
+    {
+        shakeTimer = duration;
+        shakeIntensity = intensity;
+        initialPosition = playerCamera.localPosition;
     }
 }

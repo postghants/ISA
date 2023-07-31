@@ -15,6 +15,7 @@ public class AirgunFireEffect : MonoBehaviour, HandheldObject
     public LayerMask blockMask;
     [HideInInspector] public Transform fpsCamera;
     [HideInInspector] public Rigidbody playerRb;
+    private playerLook playerLook;
 
 
     [Header("Attack Data")]
@@ -24,11 +25,14 @@ public class AirgunFireEffect : MonoBehaviour, HandheldObject
     public float playerKbForce;
     public float fireCooldown;
     private float fireTimer = 0;
+    public float shakeDuration;
+    public float shakeIntensity;
 
     public void Awake()
     {
-        fpsCamera = FindObjectOfType<Camera>().transform;
+        fpsCamera = Camera.main.transform;
         playerRb = fpsCamera.GetComponentInParent<Rigidbody>();
+        playerLook = fpsCamera.GetComponentInParent<playerLook>();
     }
 
     public void FixedUpdate()
@@ -43,26 +47,31 @@ public class AirgunFireEffect : MonoBehaviour, HandheldObject
         }
     }
 
+    public void Shoot()
+    {
+        playerLook.ShakeCamera(shakeDuration, shakeIntensity);
+        Vector3 hitStartVector = fpsCamera.TransformDirection(Vector3.forward) * hitStartOffset;
+        Vector3 hitLengthVector = fpsCamera.TransformDirection(Vector3.forward) * (hitStartOffset + hitLength);
+        Collider[] colliders = Physics.OverlapCapsule(hitStartVector, hitLengthVector, hitRadius, hitMask);
+        foreach (Collider collider in colliders)
+        {
+            if (!Physics.Raycast(fpsCamera.transform.position, collider.transform.position, Vector3.Distance(fpsCamera.transform.position, collider.transform.position), blockMask))
+            {
+                HitHandler target = collider.GetComponent<HitHandler>();
+                target.TakeDamage(damage);
+                Vector3 force = (collider.transform.position - fpsCamera.transform.position).normalized * enemyKbForce;
+                target.TakeKnockback(force, enemyKbTime);
+            }
+        }
+        Vector3 playerForce = fpsCamera.TransformDirection(Vector3.back) * playerKbForce;
+        playerRb.AddForce(playerForce);
+    }
+
     public void OnFire(InputAction.CallbackContext context)
     {
         if (fireTimer == 0)
         {
-            Vector3 hitStartVector = fpsCamera.TransformDirection(Vector3.forward) * hitStartOffset;
-            Vector3 hitLengthVector = fpsCamera.TransformDirection(Vector3.forward) * (hitStartOffset + hitLength);
-            Collider[] colliders = Physics.OverlapCapsule(hitStartVector, hitLengthVector, hitRadius, hitMask);
-            foreach (Collider collider in colliders)
-            {
-                if (!Physics.Raycast(fpsCamera.transform.position, collider.transform.position, Vector3.Distance(fpsCamera.transform.position, collider.transform.position), blockMask))
-                {
-                    HitHandler target = collider.GetComponent<HitHandler>();
-                    target.TakeDamage(damage);
-                    Vector3 force = (collider.transform.position - fpsCamera.transform.position).normalized * enemyKbForce;
-                    target.TakeKnockback(force, enemyKbTime);
-                }
-            }
-            Vector3 playerForce = fpsCamera.TransformDirection(Vector3.back) * playerKbForce;
-            playerRb.AddForce(playerForce);
-
+            Shoot();
             fireTimer = fireCooldown;
         }
     }
